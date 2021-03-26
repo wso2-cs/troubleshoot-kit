@@ -2,7 +2,7 @@
 
 This shell script facilitate to get multiple thread dumps within a specified time period
 
-###How to get ?
+### How to get ?
 
 Taking 4 thread dumps in one minute interval for java process with pid 1234.
 ```

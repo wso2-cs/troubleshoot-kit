@@ -1,6 +1,6 @@
 ## Database Response Timing Tool
 
-###Introduction
+### Introduction
 
 Purpose of this DBClient is to isolate whether DB becoming a performance bottleneck in production deployment.
 (It's not possible to enable JDBC spy logs in production systems, since it need some config file changes and server
@@ -17,7 +17,7 @@ Note:
 You need to have idea on the issue that you are going to isolate and define the SQL query as relevant for that.
 eg: Token generation, Registry, JDBC user store issues need to pick the query as relevant for each.
 
-###How to build ?
+### How to build ?
 
 1. Checkout the source and execute following command from the project home folder (database-response-timing)
    
@@ -25,7 +25,7 @@ eg: Token generation, Registry, JDBC user store issues need to pick the query as
 
 2. Build zip (database-response-timing-1.0.0-bundle.zip) will available in project target directory, once build is success.
 
-###How to execute the client ?
+### How to execute the client ?
 1. Copy *database-response-timing-1.0.0-bundle.zip* to intended location and unzip the file ```unzip ./database-response-timing-1.0.0-bundle.zip -d .```
 
 2. Update the [application.yaml](#application.yaml) file with correct configs.
@@ -55,7 +55,7 @@ eg: Token generation, Registry, JDBC user store issues need to pick the query as
 2021-03-16 11:10:44 [main] INFO  o.w.d.d.DatabaseResponseTimingApplication - Started DatabaseResponseTimingApplication in 3.03 seconds (JVM running for 3.733)
 ```
 
-###application.yaml
+### application.yaml
 
 This file contains all the configurations needed to be made in order to run the tool timing tool. Following is a sample configuration file, Which configured to connect mysql database.
 
@@ -93,19 +93,19 @@ logging:
     org.wso2.diagnose.databaseresponsetiming: INFO
 ```
 
-####Datasource 
+#### Datasource 
 
 Configurations related to the database connection, [Please refer](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#common-application-properties-data) for all database related configs.
 
 And we can specify the Tomcat JDBC configurations under *tomcat* tag, Refer [Please refer](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#spring.datasource.tomcat) for all JDBC configs.
 
-####testconfig
+#### testconfig
 - totalIterations - Number of total iterations' database connection runs.
 - iterationsPerConnection - Number of total iterations' runs with a single db connection.
 - sleepTime - Sleep after complete one iteration (Default 0)
 - query - SQL Query to execute.
 
-####logging
+#### logging
 Logging related configs, [Please refer](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#logging.charset.console) for more information.
 
 
