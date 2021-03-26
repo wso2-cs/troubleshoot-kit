@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    #Sample mysql connection More information : https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#common-application-properties-data
+    url: "jdbc:mysql://localhost:3306/test"
+    username: "root"
+    password: "strongpassword"
+    driver-class-name: "com.mysql.jdbc.Driver"
+    type: "org.apache.tomcat.jdbc.pool.DataSource"
+    #Configs can found in https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#spring.datasource.tomcat
+    tomcat:
+      initial-size: 1
+      max-active: 2
+      min-idle: 1
+
+testconfig:
+  totalIterations: 2
+  iterationsPerConnection: 1
+  sleepTime: 10000
+  query: "SELECT * FROM abc"
+
+#Logging configuration more information : https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#logging.charset.console
+logging:
+  file:
+    name: ./response.log
+    path: ./
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    org.wso2.diagnose.databaseresponsetiming: INFO
+

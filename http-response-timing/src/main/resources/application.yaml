@@ -1,0 +1,28 @@
+---
+monitoringFrequency: 5000
+workerPoolSize: 15
+globalTimeout: 30
+httpClientImpl: org.wso2.diagnose.httpresponsetiming.impl.HttpClientHealthCheck
+WebsiteMonitoringMetadata:
+  - url: https://run.mocky.io/v3/d9176ed0-f286-4293-b078-9f1d4cea4ff8
+    expectedStatusCode: 200
+    expectedResponseRegEx: "[A-Z]"
+  - url: https://google.com
+    expectedStatusCode: 200
+    expectedResponseRegEx: "[A-Za-z]"
+  - url: https://abc.com
+    expectedStatusCode: 202
+    expectedResponseRegEx: "[A-Za-z]"
+spring:
+  logging:
+    pattern:
+      file: "%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"
+    level:
+      com.shagihan.webhealthcheckmonitor: DEBUG
+    file:
+      path: ./
+      name: ./web-health.log
+  task:
+    scheduling:
+      pool:
+        size: 10
