@@ -7,15 +7,15 @@ HTTP/HTTPS response timeing tool is a monitoring tool supports to check and moni
 1.  JDK version - 1.8
 2.  Maven version
 3.  Build the source  `mvn clean install`
-4.  Copy zip built artifact  `cp /web-healthcheck-monitor
-    /target/web-healthcheck-monitor-0.0.1-bundle.zip ~/workspace`
-5.  Extract the zip file  `unzip ./web-healthcheck-monitor-0.0.1-bundle.zip -d .`
+4.  Copy zip built artifact  `cp /http-response-timing
+    /target/http-response-timing-0.0.1-bundle.zip ~/workspace`
+5.  Extract the zip file  `unzip ./http-response-timing-0.0.1-bundle.zip -d .`
 
 
 ## Contents of zip
 
 1. README.md - Brief description of this tool.
-2. web-healthcheck-monitor-0.0.1.jar - This will be executable file.
+2. http-response-timing-0.0.1.jar - This will be executable file.
 3. web-health.log - This is the default log file.
 4. application.yaml - Contains all the configurations.
 
@@ -23,7 +23,7 @@ HTTP/HTTPS response timeing tool is a monitoring tool supports to check and moni
 
 **Pre required to install Java 8 and JAVA_HOME should be properly configured.**
 - Go to the ~/workspace
-- Run ```java -jar web-healthcheck-monitor-0.0.1.jar```
+- Run ```java -jar http-response-timing-0.0.1.jar```
 
 ## Sample output
 - On a successful response

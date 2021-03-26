@@ -26,7 +26,7 @@
         <fileSet>
             <directory>${project.build.directory}</directory>
             <includes>
-                <include>web-healthcheck-monitor-0.0.1.jar </include>
+                <include>http-response-timing-0.0.1.jar</include>
             </includes>
             <outputDirectory>./</outputDirectory>
         </fileSet>
