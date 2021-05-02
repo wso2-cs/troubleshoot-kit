@@ -9,3 +9,4 @@ This repo contains the tools, utilities and some usefull commands help to troubl
 - [Usefull keytool and OpenSSL Commands](scripts-and-commands/keytool-openssl-commands/README.md)
 - [Simple TCP proxy simulating delays in network](https://github.com/ruwanta/delaying-proxy)
 - [Decrypt and re-encrypt entries in database with new algorhythm or key](https://github.com/shagihan/token-migrator)
+- [HAR Capture](HAR-capture/README.md)
