@@ -12,6 +12,7 @@ import org.wso2.diagnose.databaseresponsetiming.configdto.TestConfig;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
 @Component
@@ -55,9 +56,21 @@ public class DBTester implements InitializingBean {
                     avaRespTim += (System.currentTimeMillis() - start);
                     start = System.currentTimeMillis();
                     int count = 0;
+                    ResultSetMetaData rsmd = rs.getMetaData();
+                    int columnsNumber = rsmd.getColumnCount();
                     while (rs.next()) {
                         count++;
                         log.debug("Getting result.....");
+                        if (testConfig.getLogResultSet()){
+                            for (int n = 1; n <= columnsNumber; n++) {
+                                try {
+                                    String columnValue = rs.getString(n);
+                                    log.info( rsmd.getColumnName(n) + " - " +  columnValue);
+                                }catch (ClassCastException e){
+                                    log.error( "Error while casting java.sql.Type: " + rsmd.getColumnType(n)+ " to string", e);
+                                }
+                            }
+                        }
                     }
                     log.info("Test round " + j + " iteration : " + i + " | Time to iterate through "
                             + count + " items in result set in (ms) : " + (System.currentTimeMillis() - start));
