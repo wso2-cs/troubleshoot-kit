@@ -6,8 +6,8 @@ consuming the high percentage of the server CPU.
 
 ## How to analyze ?
 
-copy the script [thread-usage-analyzer.sh](scripts-and-commands/thread-dump/thread-usage-analyzer.sh) to the same directory which contains the thread usage and thread dumps that has been collected using the
-[Script to get thread dumps](scripts-and-commands/thread-dump/).
+copy the script [thread-usage-analyzer.sh](thread-usage-analyzer.sh) to the same directory which contains the thread usage and thread dumps that has been collected using the
+[Script to get thread dumps](../../scripts-and-commands/thread-dump/).
 
 ## Instruction to run
 
