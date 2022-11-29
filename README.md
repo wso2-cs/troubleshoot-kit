@@ -5,6 +5,7 @@ This repo contains the tools, utilities and some usefull commands help to troubl
 
 - [Database response time mesuring tool](database-response-timing/) | [Download](https://github.com/wso2-cs/troubleshoot-kit/releases/download/v1/database-response-timing-bundle.zip)
 - [HTTP/HTTPS endpoint response time mesuring tool](http-response-timing/) | [Download](https://github.com/wso2-cs/troubleshoot-kit/releases/download/v1/http-response-timing-bundle.zip)
+- [Test LDAP connectivity](ldap-connection-test/)
 - [Script to get thread dumps](scripts-and-commands/thread-dump/)
 - [Script to Analyze thread dumps](scripts-and-commands/thread-analysis/)
 - [Usefull keytool and OpenSSL Commands](scripts-and-commands/keytool-openssl-commands/README.md)
