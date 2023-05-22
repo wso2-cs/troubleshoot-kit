@@ -1,4 +1,9 @@
 # Get Details About a TLS Certificate
+One of the most common tasks once a system is in production for a while is the need to replace expired TLS certificates. The number one symptom that notifies you that this is needed is that back-end system fail to connect and will give an error message in the log files. 
+
+Tracking down why you can't connect is simplified if you can check for the expired use case from the server that is making the connection call. These servers almost never have UI frontends allowing for the certificate view trick we often use in a web browser to check for the dates. This is especially important when server whitelisting rules are in place. 
+
+These linux shell commands are provided to aid in identifying exactly this use case and also to trouble shoot issues that may come up once the new certificate is in place.
 
 ## checkcert
 These scripts are for getting the notbefore and notafter dates of a certificate.
