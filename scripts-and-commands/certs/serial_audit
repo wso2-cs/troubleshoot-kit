@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# This script will check every server in server_list.txt to see if it has a public cert serial
+# that matches target_serial.txt. This is utilized to ensure that all servers have the same corporate
+# wildcard certificate after renewal. 
+#
+# Add server list into a server_list.txt file. One line per a server. Include the port number.
+# Example: 
+# google.com:443
+# localhost:9443
+#
+# Add expected serial number in a file named target_serial.txt
+# example:
+# 111111111111111111111111111
+
+
+TARGET_SERIAL=`cat target_serial.txt`
+echo "Target Serial is: $TARGET_SERIAL"
+
+#looping over each server in server_list.txt
+echo "== Starting =="
+
+while read SERVER; do
+  SERVER_SERIAL=`echo QUIT | openssl s_client -connect $SERVER -servername $SERVER </dev/null 2>/dev/null| openssl x509 -noout -serial 2>/dev/null| cut -d '=' -f2`
+
+  if [ "$SERVER_SERIAL" == "$TARGET_SERIAL" ]; then
+      echo "$SERVER: Serials match."
+  else
+      echo "$SERVER - WARNING: CERTIFICATE SERIAL NUMBERS DO NOT MATCH. Server has $SERVER_SERIAL and we are looking for $TARGET_SERIAL."
+  fi
+done < server_list.txt
+
+echo "== Done. =="
