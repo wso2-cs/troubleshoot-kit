@@ -54,8 +54,6 @@ Successful event publication:
 ! Event was successfully published to the broker !
 ```
 
-Absolutely, here's a template for describing the configuration parameters in your README:
-
 ## Configuration
 
 Before you start using the JMS Consumer/Publisher Client, you'll need to configure the `config.properties` file with the necessary settings. Here's what each parameter in the configuration file means:
