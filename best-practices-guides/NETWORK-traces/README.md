@@ -42,8 +42,8 @@ sensitive information.
 network requests. 
 - Save the sanitized trace with a different name to distinguish it from the original (e.g., add "`_sanitized.har`"
 to the filename). 
-- Import the sanitized HAR file into a credible browser to validate that the changes were successful and that 
-no issues have arisen. 
+- Import the sanitized HAR file into the browser to confirm the success of the changes and 
+ensure no issues have occurred. 
 - Upload the sanitized network trace to your support request, mentioning that the file has been sanitized to 
 protect sensitive information.
 
