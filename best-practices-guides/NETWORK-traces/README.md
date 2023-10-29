@@ -27,7 +27,6 @@ Sensitive information, if not removed, can pose security risks when sharing netw
 1. You may utilize the SAML tracer to share HTTP traces when necessary, as it comes with built-in masking capabilities. 
 For detailed information on how to obtain the SAML trace, please refer to
 [SAML Trace Capture](/SAML-trace-capture/README.md).
-
 2. Most importantly, ensure that you select the 'Mask values' option when exporting the SAML tracer file.
 
 ### Precautions with HAR file
