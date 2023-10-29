@@ -12,7 +12,7 @@ In cases where the SAML tracer is not possible to use, we provide guidelines for
 
 A network trace, also known as an HTTP trace, is a log of network activity in a web browser or application. 
 It can include sensitive information like cookies, authorization headers, and more. 
-While these details are crucial for diagnosing issues, they should be sanitized before sharing the trace
+While these details are crucial for diagnosing issues, they should be sanitized before sharing the trace.
 
 ### Why Sanitize a Network Trace?
 
@@ -48,6 +48,8 @@ no issues have arisen.
 protect sensitive information.
 
 Moreover, you have the option to use Unix/Linux commands to search for and replace sensitive data.
-The provided command serves as an example for replacing/masking sensitive information within a HAR file.
+The following command provides an example of replacing/masking sensitive WSO2-related information within a HAR file,
 ```
-sed -i -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' -e 's/password=[^&]*/password=MASKED/g' -e "s/\(\"name\":.\"password[^:]*:.\"\)\([^\"]*\)/\1\MASKED/g" -e "s/\(commonAuthId=\)\([^;]*;\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')};/g" -e "s/\(JSESSIONID=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(\"name\":*[^:]*:.\"Bearer.\)\([^\"]*\)/\1md5-$(echo -n \2 | md5sum)/g" -e "s/\(\"name\":.\"id_token_hint[^:]*:.\"\)\([^\"]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(id_token_hint=\)\([^&]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g"  -e "s/\(samlssoTokenId=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e 's/\"cookies\":\s*[^]]*/\"cookies\": [/g' network-trace.har```
+sed -i -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' -e 's/password=[^&]*/password=MASKED/g' -e "s/\(\"name\":.\"password[^:]*:.\"\)\([^\"]*\)/\1\MASKED/g" -e "s/\(commonAuthId=\)\([^;]*;\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')};/g" -e "s/\(JSESSIONID=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(\"name\":*[^:]*:.\"Bearer.\)\([^\"]*\)/\1md5-$(echo -n \2 | md5sum)/g" -e "s/\(\"name\":.\"id_token_hint[^:]*:.\"\)\([^\"]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(id_token_hint=\)\([^&]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g"  -e "s/\(samlssoTokenId=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e 's/\"cookies\":\s*[^]]*/\"cookies\": [/g' network-trace.har
+```
+
