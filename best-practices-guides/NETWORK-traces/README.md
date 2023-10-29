@@ -52,4 +52,3 @@ The following command provides an example of replacing/masking sensitive WSO2-re
 ```
 sed -i -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' -e 's/password=[^&]*/password=MASKED/g' -e "s/\(\"name\":.\"password[^:]*:.\"\)\([^\"]*\)/\1\MASKED/g" -e "s/\(commonAuthId=\)\([^;]*;\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')};/g" -e "s/\(JSESSIONID=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(\"name\":*[^:]*:.\"Bearer.\)\([^\"]*\)/\1md5-$(echo -n \2 | md5sum)/g" -e "s/\(\"name\":.\"id_token_hint[^:]*:.\"\)\([^\"]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(id_token_hint=\)\([^&]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g"  -e "s/\(samlssoTokenId=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e 's/\"cookies\":\s*[^]]*/\"cookies\": [/g' network-trace.har
 ```
-
