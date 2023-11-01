@@ -34,7 +34,7 @@ For detailed information on how to obtain the SAML trace, please refer to
 It is possible to obtain HTTP Traces using browser-inbuilt tools in cases where the SAML tracer is not available.
 You can refer to [HAR Capture](/HAR-capture/README.md) for more information on obtaining the Browser trace.
 
-- Make sure to use a test user account with low privileges to reproduce the test-case.
+- Make sure to use a test user account with low privileges to reproduce the test-case and reset the password.
 - If a test user cannot be used, you must review the network trace and carefully inspect the contents for 
 sensitive information.
 - If you’re manually editing the sensitive information, you must ensure consistency in the structure and timing of 
