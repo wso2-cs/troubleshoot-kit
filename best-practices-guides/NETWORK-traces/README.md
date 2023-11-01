@@ -1,4 +1,4 @@
-# Best Practices for Sharing Network Traces
+# Best Practices for Sharing Network Traces from Web browsers
 
 ## Introduction
 
