@@ -2,7 +2,7 @@
 
 # Check number of arguments
 if [ "$#" -ne 3 ]; then
-    echo "usage: sh thread-analyze.sh <pid> <number-of-dumps> <interval>[s|m|h|d]"
+    echo "usage: sh thread-analyze-mac.sh <PID> <number-of-dumps> <interval>[s|m|h|d]"
     exit 1
 fi
 
