@@ -28,26 +28,19 @@ def getResult(string):
 # This function will create a log file
 def create_log_file():
     # ct stores current time
-    ct = datetime.datetime.now()    
+    ct = datetime.now()    
     file = open(cwd + "/mau_analysis_log.txt", "w")
-    file.write("[" + ct + "]" + " - Log file created.")
-    print("[" + ct + "]" + " - Log file created.")
+    message = "[" + ct.strftime("%m/%d/%Y, %H:%M:%S") + "]" + " - Log file created." + "\n"
+    file.write(message)
+    print_stdout(message)
     file.close()
-
-# This function will delete the log file if it exists
-def delete_log_file():
-    if os.path.exists("mau_analysis_log.txt"):
-        os.remove("mau_analysis_log.txt")
-        print("Log file deleted.")
-    else:
-        print("The file does not exist")
 
 # This function will log the message to a file and std output
 def log(message):
     # ct stores current time
-    ct = datetime.datetime.now()    
-    file = open(cwd + "mau_analysis_log.txt", "a")
-    message = "[" + ct + "]" + " - " + message
+    ct = datetime.now()    
+    file = open(cwd + "/mau_analysis_log.txt", "a")
+    message = "[" + ct.strftime("%m/%d/%Y, %H:%M:%S") + "]" + " - " + message + "\n"
     file.write(message)
     print_stdout(message)
     file.close()
@@ -56,6 +49,11 @@ def log(message):
 def debug_log(message):
     if (debug):
         log(message)
+
+# This function will delete the log file if it exists
+def delete_log_file():
+    if os.path.exists("mau_analysis_log.txt"):
+        os.remove("mau_analysis_log.txt")
 
 # This function will print the message to std output
 def print_stdout(message):    
@@ -142,6 +140,7 @@ def main():
 
     # Audit log file path
     global auditLogFilePath
+    auditLogFilePath = cwd
 
     # total arguments
     n = len(sys.argv)
@@ -150,13 +149,16 @@ def main():
     startYear = 1970
 
     # Default end year
-    currentYear = datetime.datetime.now().year
+    currentYear = datetime.now().year
 
     # Current Month
-    currentMonth = datetime.datetime.now().month
+    currentMonth = datetime.now().month
 
     # If the log file exisits we needs to delte
     delete_log_file()
+
+    # Creating the log file
+    create_log_file()
 
     # Processing passed arguments
     for i in range(1, n):
@@ -217,7 +219,7 @@ def main():
             mau_count = len(uniqueUsers)
             loginCount = len(all_logins)
             log(f"MAUs calculated for {logYear}-{logMonthString} is: " + str(mau_count))
-            log(f"Total Logins for {logYear}-{logMonthString} is: " + str(loginCount) + "\n")
+            log(f"Total Logins for {logYear}-{logMonthString} is: " + str(loginCount))
 
     log("Monthly Active User Calculation script ended.")    
 
