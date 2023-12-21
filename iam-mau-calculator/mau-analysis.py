@@ -29,7 +29,7 @@ def getResult(string):
 def create_log_file():
     # ct stores current time
     ct = datetime.datetime.now()    
-    file = open("mau_analysis_log.txt", "w")
+    file = open(cwd + "/mau_analysis_log.txt", "w")
     file.write("[" + ct + "]" + " - Log file created.")
     print("[" + ct + "]" + " - Log file created.")
     file.close()
@@ -46,7 +46,7 @@ def delete_log_file():
 def log(message):
     # ct stores current time
     ct = datetime.datetime.now()    
-    file = open("mau_analysis_log.txt", "a")
+    file = open(cwd + "mau_analysis_log.txt", "a")
     message = "[" + ct + "]" + " - " + message
     file.write(message)
     print_stdout(message)
@@ -104,14 +104,30 @@ def process_single_file(filename, timePeriod):
 
 # Process all audit log files in the current directory for the given time period
 def process_all_audit_log_files(timePeriod):
-    # If the audit log file path is provided we will change the directory or we will use the current directory 
+    # If the audit log file paths are provided current working directories will be changed and process the files
     if (auditLogFilePath is not None):
-        os.chdir(auditLogFilePath)
-    for filename in os.listdir():
-        if filename.startswith("audit"):
-            uniqueUsers = uniqueUsers.union(process_single_file(filename, timePeriod))
+        if ("|" in auditLogFilePath):
+            for path in auditLogFilePath.split("|"):
+                os.chdir(path)
+                for filename in os.listdir():
+                    if filename.startswith("audit"):
+                        uniqueUsers = uniqueUsers.union(process_single_file(filename, timePeriod))
+        else:
+            os.chdir(auditLogFilePath)
+            for filename in os.listdir():
+                if filename.startswith("audit"):
+                    uniqueUsers = uniqueUsers.union(process_single_file(filename, timePeriod))
+    else:
+        # If the audit log file path is not present current directory will be used
+        for filename in os.listdir():
+            if filename.startswith("audit"):
+                uniqueUsers = uniqueUsers.union(process_single_file(filename, timePeriod))
 
 def main():
+    # Current working directory
+    global cwd
+    cwd = os.getcwd()
+
     # Enable debug mode
     global debug
     debug = False
@@ -147,12 +163,12 @@ def main():
         if (sys.argv[i] == "-h" or sys.argv[i] == "--help"):
             print("Usage: python3 mau-analysis.py [options]")
             print("Options:")
-            print("  -h, --help            show the help message and exit")
-            print("  -v, --version         show version information")
-            print("  -st, --start-year     start year for the analysis")
-            print("  -et, --end-year       end year for the analysis")
-            print("  -p, --path            audit log file directory path")
-            print("  -d                    enable debug mode")
+            print("  -h, --help            Show the help message and exit.")
+            print("  -v, --version         Show version information.")
+            print("  -st, --start-year     Start year for the analysis. Default value is 1970.")
+            print("  -et, --end-year       End year for the analysis. Default value is current year.")
+            print("  -p, --path            Audit log file directory path. If required to pass multiple directories use '|' separated values.\n Example: -p /home/user1/audit-logs|/home/user2/audit-logs \n Note: If the path is not provided the script will use the current working directory. \nThe use of multiple directories is helpful when you have audit logs in multiple nodes.")
+            print("  -d                    Enable debug mode. By default debug mode is disabled.")
             exit()
         if (sys.argv[i] == "-v" or sys.argv[i] == "--version"):
             print("Version: 1.0.0")
