@@ -104,6 +104,9 @@ def process_single_file(filename, timePeriod):
 
 # Process all audit log files in the current directory for the given time period
 def process_all_audit_log_files(timePeriod):
+    # If the audit log file path is provided we will change the directory or we will use the current directory 
+    if (auditLogFilePath is not None):
+        os.chdir(auditLogFilePath)
     for filename in os.listdir():
         if filename.startswith("audit"):
             uniqueUsers = uniqueUsers.union(process_single_file(filename, timePeriod))
@@ -120,6 +123,9 @@ def main():
     # Set to store total login attempts
     global all_logins 
     all_logins = []
+
+    # Audit log file path
+    global auditLogFilePath
 
     # total arguments
     n = len(sys.argv)
@@ -139,8 +145,14 @@ def main():
     # Processing passed arguments
     for i in range(1, n):
         if (sys.argv[i] == "-h" or sys.argv[i] == "--help"):
-            print("Usage: python3 mau-analysis.py [-d] [-h]")
-            print("-h: Help")
+            print("Usage: python3 mau-analysis.py [options]")
+            print("Options:")
+            print("  -h, --help            show the help message and exit")
+            print("  -v, --version         show version information")
+            print("  -st, --start-year     start year for the analysis")
+            print("  -et, --end-year       end year for the analysis")
+            print("  -p, --path            audit log file directory path")
+            print("  -d                    enable debug mode")
             exit()
         if (sys.argv[i] == "-v" or sys.argv[i] == "--version"):
             print("Version: 1.0.0")
@@ -159,6 +171,13 @@ def main():
             else:
                 print("End Year is missing. Please provide a valid end year. Use -h or --help for more information.")
                 exit()
+        if (sys.argv[i] == "-p" or sys.argv[i] == "--path"):
+            if (i + 1 < n):
+                auditLogFilePath = sys.argv[i + 1]
+                log("Audit Log File Path: " + auditLogFilePath)
+            else:
+                print("Audit Log File Path is missing. Please provide a valid path. Use -h or --help for more information.")
+                exit()
         if (sys.argv[i] == "-d"):
             debug = True
             log("Debug mode enabled.")
@@ -167,7 +186,7 @@ def main():
     endYear = currentYear
 
     log("Monthly Active User Calculation script started.")
-    
+
     for logYear in range (startYear, endYear + 1):
         for logMonth in range(1, 13):
             if (logYear == currentYear and logMonth == currentMonth):
