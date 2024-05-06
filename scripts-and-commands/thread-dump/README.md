@@ -4,7 +4,7 @@ This shell script facilitate to get multiple thread dumps within a specified tim
 
 ### How to get ?
 
-Taking 4 thread dumps in one minute interval for java process with pid 1234.
+Taking 4 thread dumps with one minute delay for java process with pid 1234.
 ```
 sh thread-analyze.sh 1234 4 1m
 ```
