@@ -1,4 +1,4 @@
-# Best Practices for Sharing Network Traces from Web browsers
+# Best Practices for Sharing Network Traces from Web Browsers
 
 ## Introduction
 
@@ -16,7 +16,7 @@ While these details are crucial for diagnosing issues, they should be sanitized 
 
 ### Why Sanitize a Network Trace?
 
-Sensitive information, if not removed, can pose security risks when sharing network traces. This data may include:
+If not removed, sensitive information can pose security risks when sharing network traces. This data may include:
 - Cookies with session information
 - Authorization headers
 - Passwords
@@ -34,20 +34,8 @@ For detailed information on how to obtain the SAML trace, please refer to
 It is possible to obtain HTTP Traces using browser-inbuilt tools in cases where the SAML tracer is not available.
 You can refer to [HAR Capture](/HAR-capture/README.md) for more information on obtaining the Browser trace.
 
-- Make sure to use a test user account with low privileges to reproduce the test-case and reset the password.
-- If a test user cannot be used, you must review the network trace and carefully inspect the contents for 
-sensitive information.
-- If you’re manually editing the sensitive information, you must ensure consistency in the structure and timing of 
-network requests.
-- Save the sanitized trace with a different name to distinguish it from the original (e.g., add "`_sanitized.har`"
-to the filename).
-- Import the sanitized HAR file into the browser to confirm the success of the changes and 
-ensure no issues have occurred. 
-- Upload the sanitized network trace to your support request, mentioning that the file has been sanitized to 
-protect sensitive information.
-
-Moreover, you have the option to use Unix/Linux commands to search for and replace sensitive data.
-The following command provides an example of replacing/masking sensitive WSO2-related information within a HAR file,
-```
-sed -i -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' -e 's/password=[^\"&]*/password=MASKED/g' -e "s/\(\"name\":.\"password[^:]*:.\"\)\([^\"]*\)/\1\MASKED/g" -e "s/\(commonAuthId=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')};/g" -e "s/\(JSESSIONID=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(\"name\":*[^:]*:.\"Bearer.\)\([^\"]*\)/\1md5-$(echo -n \2 | md5sum)/g" -e "s/\(\"name\":.\"id_token_hint[^:]*:.\"\)\([^\"]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e "s/\(id_token_hint=\)\([^\&]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g"  -e "s/\(samlssoTokenId=\)\([^\";]*\)/\1md5{$(echo -n \2 | md5sum | sed 's/ .*$//')}/g" -e 's/\"cookies\":\s*[^]]*/\"cookies\": [/g' network-trace.har
-```
+- Ensure you use a test user account with low privileges to reproduce the test case and reset the password.
+- If a test user account cannot be used, utilize the [HAR Sanitizer Tool](https://wso2-cs.github.io/har-sanitizer-tool).
+- This tool sanitizes sensitive data, providing the capability to hash or remove it entirely from your network traces. It ensures your session cookies, authorization headers, and other sensitive information remain private.
+- The tool employs client-side logic to sanitize HAR files, allowing you to share troubleshooting data without compromising security.
+- Upload the sanitized network trace to your support request, specifying that the file has been sanitized to protect sensitive information.
