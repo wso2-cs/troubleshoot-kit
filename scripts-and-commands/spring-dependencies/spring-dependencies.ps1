@@ -63,8 +63,8 @@ foreach ($result in $results) {
 }
 
 if ($filtered.Count -eq 0) {
-    Write-Output 'There are no Spring dependencies.' | Tee-Object -file results.txt;
+    Write-Output 'There are no Spring dependencies.' | Tee-Object -file spring-dependency-results.txt;
 } else {
     Write-Output 'List of Spring dependencies found:';
-    Write-Output $filtered | ForEach-Object { Write-Output $_ } | Tee-Object -file results.txt; 
+    Write-Output $filtered | ForEach-Object { Write-Output $_ } | Tee-Object -file spring-dependency-results.txt; 
 }

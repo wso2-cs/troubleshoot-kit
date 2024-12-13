@@ -53,8 +53,8 @@ output=$(grep -r "$search_pattern" "${exclude_args[@]}" "${include_dirs[@]}" 2>/
 
 # Check if the output is empty
 if [[ -z "$output" ]]; then
-    echo "There are no Spring dependencies." | tee results.txt
+    echo "There are no Spring dependencies." | tee spring-dependency-results.txt
 else
-    echo "List of Spring dependencies found:" | tee results.txt
+    echo "List of Spring dependencies found:" | tee spring-dependency-results.txt
     echo "$output"
 fi
