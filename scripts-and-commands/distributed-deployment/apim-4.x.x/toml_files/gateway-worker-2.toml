@@ -1,6 +1,5 @@
 [server]
 hostname = "localhost"
-#hostname = "gw.wso2.com"
 server_role = "gateway-worker"
 
 [user_store]
@@ -13,7 +12,7 @@ create_admin_account = true
 
 [database.shared_db]
 type = "mysql"
-url = "jdbc:mysql://localhost:3306/SHARED_DB_WSO2AM_400?useSSL=false"
+url = "jdbc:mysql://localhost:3306/SHARED_DB_WSO2AM_4xx?useSSL=false"
 username = "MYSQL_ROOT_USERNAME"
 password = "MYSQL_ROOT_PASSWORD"
 
@@ -31,7 +30,8 @@ password = "wso2carbon"
 
 # key manager implementation
 [apim.key_manager]
-service_url = "https://localhost:9445/services/"
+enable_apikey_subscription_validation = true
+service_url = "https://localhost:9444/services/"
 username= "$ref{super_admin.username}"
 password= "$ref{super_admin.password}"
 
@@ -91,15 +91,3 @@ allow_origins = "*"
 allow_methods = ["GET","PUT","POST","DELETE","PATCH","OPTIONS"]
 allow_headers = ["authorization","Access-Control-Allow-Origin","Content-Type","SOAPAction"]
 allow_credentials = false
-
-# Event Hub configurations
-[apim.event_hub]
-enable = true
-username = "$ref{super_admin.username}"
-password = "$ref{super_admin.password}"
-service_url = "https://localhost:9445/services/"
-event_listening_endpoints = ["tcp://localhost:5674"]
-
-[[apim.event_hub.publish.url_group]]
-urls = ["tcp://localhost:9613"]
-auth_urls = ["ssl://localhost:9713"]
