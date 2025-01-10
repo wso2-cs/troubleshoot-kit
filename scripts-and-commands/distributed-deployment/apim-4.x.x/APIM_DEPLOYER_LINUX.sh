@@ -535,8 +535,12 @@ installUnzip(){
 extractTheBasePack(){
   LOG_STATEMENT="Extracting the ZIP file\n"
   printINFOLog
+
+  base_dir="${zipFilename%.zip}"
+
+  mkdir "$extractedPackDirName"
   
-  unzip $zipFilename
+  unzip "$zipFilename" -d "$extractedPackDirName"
 
   LOG_STATEMENT="ZIP file extracted\n"
   printINFOLog

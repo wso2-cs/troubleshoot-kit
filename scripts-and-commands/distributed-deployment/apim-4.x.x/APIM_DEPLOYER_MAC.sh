@@ -527,6 +527,9 @@ installWget(){
   
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   brew install wget
+
+  brew install gnu-getopt
+  export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"
   
   LOG_STATEMENT="Installed wget\n"
   printINFOLog
@@ -536,7 +539,11 @@ extractTheBasePack(){
   LOG_STATEMENT="Extracting the ZIP file\n"
   printINFOLog
   
-  unzip $zipFilename
+  base_dir="${zipFilename%.zip}"
+
+  mkdir "$extractedPackDirName"
+  
+  unzip "$zipFilename" -d "$extractedPackDirName"
 
   LOG_STATEMENT="ZIP file extracted\n"
   printINFOLog
