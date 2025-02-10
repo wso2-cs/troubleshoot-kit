@@ -1,5 +1,5 @@
 # troubleshoot-kit
-This repo contains the tools, utilities and some usefull commands help to troubleshooting the issues of the WSO2 deployements.
+This repo contains the tools, utilities, and some useful commands to help troubleshoot issues with WSO2 deployments.
 
 ## Table of contents
 
