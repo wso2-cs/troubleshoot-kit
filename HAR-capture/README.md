@@ -16,7 +16,7 @@ This contains the instructions to record and capture HAR in different browsers.
 5. Recreate the issue
 6. Navigate to Settings > Preferences > Network
 7. Enable `Allow to generate HAR with sensitive data`
-6. To export and save the HAR file, long-press the `Export HAR` button and select Export HAR (with sensitive data)` option.
+6. To export and save the HAR file, long-press the `Export HAR` button and select `Export HAR (with sensitive data)` option.
 
 ## Firefox Broswer
 
