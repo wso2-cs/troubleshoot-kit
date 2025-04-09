@@ -18,13 +18,13 @@ Available time units
 
 ## Thread dump script for windows
 
-You can use this windows script thread-analyze-windows.bat to get 4 thread dumps with one minute (60 seconds ) interval.
+This script facilitates to get multiple thread dumps within a specified time period
 
 ### How to get ?
 
-Execute the script using below command
+Taking 4 thread dumps with one minute delay for java process with pid 1234.
 ```
-thread-analyze-windows.bat <PID>
+thread-analyze-windows.bat 1234 60 4
 ```
 
 ## Thread dump script for Mac

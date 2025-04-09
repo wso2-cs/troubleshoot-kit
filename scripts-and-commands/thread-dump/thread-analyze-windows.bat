@@ -1,11 +1,22 @@
-REM The following batch script generates 6 thread dumps at a preset interval of 20 secs
-REM script can be executed as
-REM thread-analyze-windows.bat 2120
-REM where 2120 is the java process id
+@echo off
+REM Usage: thread-analyze-windows.bat <PID> <timeout-in-seconds> <number-of-iterations>
 
-for /L %%i in (1,1,4) do (
-  echo Taking Thread Dump %i
-  jstack -l %1 > thread-dump-%%i.txt
-
-   timeout 60
+IF "%~3"=="" (
+  echo Usage: %0 ^<PID^> ^<timeout-in-seconds^> ^<number-of-iterations^>
+  exit /b 1
 )
+
+SET PID=%1
+SET TIMEOUT_INTERVAL=%2
+SET ITERATIONS=%3
+
+FOR /L %%i IN (1,1,%ITERATIONS%) DO (
+
+  
+  REM Append the current date and time to the thread dump file
+  jstack -l %PID% > thread-dump-%%i.txt
+  if %%i lss %ITERATIONS% timeout /T %TIMEOUT_INTERVAL% /NOBREAK >nul
+  echo sleeping for %TIMEOUT_INTERVAL% [%%i/%ITERATIONS%]
+)
+
+echo Done taking thread dumps.
