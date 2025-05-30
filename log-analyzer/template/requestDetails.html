@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details</title>
+    <!-- Include DataTables CSS & jQuery (make sure to include these if not already present) -->
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            /* background-color: #f4f4f4; */
+        }
+        h1 {
+            font: bold 16pt Arial, Helvetica, Geneva, sans-serif;
+            color: #336699;
+        }
+        h2 {
+            font: bold 10pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+        p{
+            font: bold 10pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table.dataTable tbody td {
+            font: 8pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+
+        table.dataTable thead th {
+            font: bold 9pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+        /* th {
+            background-color: #4CAF50;
+            color: white;
+        } */
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stats-box">
+        <h1>Request Details for Path: {{.Path}}</h1>
+        <p><strong>Total In Response Time: </strong>{{.TotalInResponseTime}} (ms)</p>
+        <p><strong>Total Query Execution Time: </strong>{{.TotalQueryExecutionTime}} (ms)</p>
+        <p><strong>Time Difference (In Response Time - Query Execution Time): </strong>{{.TimeDifference}} (ms)</p>
+    </div>
+
+    
+    <table id="requestDetailsTable" class="display">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Correlation ID</th>
+                <th>Thread ID</th>
+                <th>Duration</th>
+                <th>Call Type</th>
+                <th>Start Time</th>
+                <th>Method Name</th>
+                <th>Request Query</th>
+                <th>Request Path</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .RequestDetails }}
+            <tr>
+                <td>{{ .Timestamp }}</td>
+                <td class="correlation-id">{{ .CorrelationId }}</td>
+                <td>{{ .ThreadId }}</td>
+                <td>{{ .TotalDurationForRequest }}</td>
+                <td>{{ .CallType }}</td>
+                <td>{{ .StartTime }}</td>
+                <td>{{ .MethodName }}</td>
+                <td>{{ .RequestQuery }}</td>
+                <td>{{ .RequestPath }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+    
+    <h2>Request Query Statistics</h2>
+        <table id="queryStats" class="display">
+            <thead>
+                <tr>
+                    <th>Elapsed Time(ms)</th>
+                    <th>Executions</th>
+                    <th>Max Time(ms)</th>
+                    <th>Elapsed Time per Exec (ms)</th>
+                    <th>Min Time (ms)</th>
+                    <th>Query</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .QueryStats }}
+                <tr>
+                    <td>{{ .TotalTimeMillis }}</td>
+                    <td class="queries">{{ .Count }}</td>
+                    <td>{{ printf "%.2f" .MaxTimeMillis}}</td>
+                    <td>{{ printf "%.2f" .AverageTimeMillis}}</td>
+                    <td>{{ printf "%.2f" .MinTimeMillis}}</td>
+                    <td>{{ .Query }}</td>
+                    
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+        
+    
+    <script>
+        // Initialize DataTables
+        $(document).ready(function () {
+        if (!$.fn.dataTable.isDataTable('#requestDetailsTable')) {
+            $('#requestDetailsTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                lengthChange: true,
+                pageLength: 50,
+                order: [[3, "desc"]], // 4th column (Duration), descending order
+                columnDefs: [
+                    { type: "num", targets: 3 } // Ensure Duration column is sorted as numeric
+                ]
+            });
+        }
+
+            // Click Event For Table Rows
+            $('#requestDetailsTable tbody').on('click', 'tr', function () {
+                var correlationId = $(this).find('.correlation-id').text().trim();
+                var tabUUID = new URLSearchParams(window.location.search).get("tabUUID"); // Get tabUUID from URL
+
+                if (correlationId && tabUUID) {
+                    window.location.href = "/correlationDetails?correlationID=" + encodeURIComponent(correlationId) + "&tabUUID=" + encodeURIComponent(tabUUID);
+                } else {
+                    console.error("Missing Correlation ID or Tab UUID");
+                    alert("Error: Missing Correlation ID or Tab UUID");
+                }
+            });
+
+        });
+
+        // Initialize DataTables for the Query Stats table
+        $(document).ready(function () {
+            $('#queryStats').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                lengthChange: true,
+                pageLength: 50,
+                order: [[3, "desc"]] // Sorting by "Elapsed Time per Exec (ms)" column
+            });
+
+            // Attach click event to the entire row
+            $('#queryStats tbody').on('click', 'tr', function () {
+                var query = $(this).find('td:last').text().trim(); // Get query from last column
+
+                // Retrieve tabUUID and path from the URL
+                var urlParams = new URLSearchParams(window.location.search);
+                var tabUUID = urlParams.get("tabUUID");
+                var path = urlParams.get("path");
+
+                if (query && tabUUID && path) {
+                    // Redirect to the query executions page with parameters
+                    window.location.href = `/queryExecutionsForRequestPath?query=${encodeURIComponent(query)}&tabUUID=${encodeURIComponent(tabUUID)}&path=${encodeURIComponent(path)}`;
+                } else {
+                    console.error("Missing query, tabUUID, or path");
+                    alert("Error: Missing query, tabUUID, or path");
+                }
+            });
+        });
+
+    </script>   
+</body>
+</html>

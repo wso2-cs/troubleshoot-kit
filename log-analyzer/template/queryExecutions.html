@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Query Summary for: {{.Query}}</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+    }
+    h1 {
+        font: bold 16pt Arial, Helvetica, Geneva, sans-serif;
+        color: #336699;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    table.dataTable tbody td {
+        font: 10pt Arial, sans-serif;
+        color: black;
+    }
+    table.dataTable thead th {
+        font: bold 11pt Arial, sans-serif;
+        color: black;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Execution Summary for: {{.Query}}</h1>
+
+  <table id="summaryTable" class="display">
+    <thead>
+      <tr>
+        <th>Correlation ID</th>
+        <th>Execution Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range $id, $count := .ExecutionCounts}}
+      <tr data-correlation-id="{{$id}}">
+        <td>{{$id}}</td>
+        <td>{{$count}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+
+  <script>
+    $(document).ready(function() {
+      $('#summaryTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        lengthChange: true,
+        pageLength: 10
+      });
+  
+      // Click event to navigate to query details page with query parameter
+      $('#summaryTable tbody').on('click', 'tr', function() {
+        var correlationId = $(this).data('correlation-id');
+        if (correlationId) {
+          window.location.href = "/queryDetails?correlationId=" + correlationId + "&tabUUID={{.TabUUID}}&query={{.Query}}";
+        }
+      });
+    });
+  </script>
+  
+</body>
+</html>

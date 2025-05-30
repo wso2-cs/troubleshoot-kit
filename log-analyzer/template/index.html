@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>File Upload and Request Path Counts</title>
+  <!-- Include DataTables CSS & jQuery (make sure to include these if not already present) -->
+  <!-- Include DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <!-- Include jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Include DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background-color: #f4f4f9; */
+            color: #333;
+        }
+
+        h1 {
+            font: bold 16pt Arial, Helvetica, Geneva, sans-serif;
+            color: #336699;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="file"] {
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"]:hover, input[type="file"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            padding: 0.8rem;
+            background-color: #007BFF;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result h2 {
+            font: bold 10pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        table th, table td {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        table.dataTable tbody td {
+            font: 8pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+
+        table.dataTable thead th {
+            font: bold 9pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+
+
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 1.5rem;
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            input[type="file"] {
+                font-size: 0.9rem;
+            }
+
+            .result h2 {
+                font: bold 10pt Arial, Helvetica, Geneva, sans-serif;
+                color: black;
+            }
+        }
+
+        /* Floating plus button */
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .file-info h2 {
+            font: bold 10pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+            height: 500px;  /* Add a consistent height */
+        }
+
+        .performance-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .overview-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .overview-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 150px;
+            font-family: Arial, sans-serif;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .value {
+            font-size: 1.2em;
+            color: #007bff;
+        }
+
+        .completion-message {
+            margin-top: 20px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .completion-success {
+            background-color: #e6f4ea;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .completion-warning {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffb74d;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Upload and Request Path Counts</h1>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="uploadFile">Select a file:</label>
+            <input type="file" name="uploadedFile" multiple required>
+            <input type="hidden" name="uniqueID" id="uniqueID"> 
+            <button type="submit">Upload</button>
+        </form>
+
+         <!-- Initially Hidden Charts -->
+        <div id="chartsContainer" style="display: none;">
+
+            <div class="file-info">
+                <h2>Uploaded Files:</h2>
+                {{if .FileNames}}
+                    <ul>
+                        {{range .FileNames}}
+                            <li>{{.}}</li>
+                        {{end}}
+                    </ul>
+                {{else}}
+                    <p>No files uploaded yet.</p>
+                {{end}}
+            </div>
+
+            <div class="performance-info">
+                <h2>Performance Overview</h2>
+                <div class="overview-row">
+                    <div class="overview-column">
+                        <div class="label">Total Request Count</div>
+                        <div class="value">{{ .OverallRequestStats.TotalHTTPRequests }}</div>
+                    </div>
+                    <div class="overview-column">
+                        <div class="label">Total Response Count</div>
+                        <div class="value">{{ .OverallRequestStats.TotalHTTPResponses}}</div>
+                    </div>
+                    <div class="overview-column">
+                        <div class="label">Average Time (ms)</div>
+                        <div class="value">{{ printf "%.2f" .OverallRequestStats.Average }}</div>
+                    </div>
+                    <div class="overview-column">
+                        <div class="label">95th Percentile (ms)</div>
+                        <div class="value">{{ printf "%.2f" .OverallRequestStats.Percentile }}</div>
+                    </div>
+                </div>
+
+                <div class="completion-message {{ if eq .OverallRequestStats.TotalHTTPRequests .OverallRequestStats.TotalHTTPResponses }}completion-success{{ else }}completion-warning{{ end }}">
+                    {{ .OverallRequestStats.CompletionMessage }}
+                </div>
+                
+            </div>
+
+            <div class="chart-container">
+                <canvas id="timeBucketChart" width="800" height="400"></canvas>
+            </div>
+
+                <!-- Show Charts when file is uploaded -->
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    document.getElementById("chartsContainer").style.display = "block";
+                });
+            </script>
+            
+
+            <script id="timeBucketData" type="application/json">
+                {{ marshal .TimeBuckets }}
+            </script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const rawTimeBuckets = JSON.parse(document.getElementById('timeBucketData').textContent || '{}');
+
+                    console.log("Parsed time bucket data:", rawTimeBuckets);
+
+                    const labels = Object.keys(rawTimeBuckets).sort();
+                    const durations = labels.map(k => rawTimeBuckets[k].AvgDuration);
+                    const requestCounts = labels.map(k => rawTimeBuckets[k].RequestCount);
+                    const percentiles = labels.map(k => rawTimeBuckets[k].Percentile95);
+
+                    const ctx = document.getElementById('timeBucketChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar', // Base type
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Request Count',
+                                    data: requestCounts,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1,
+                                    yAxisID: 'y'
+                                },
+                                {
+                                    label: '95th Percentile (ms)',
+                                    data: percentiles,
+                                    type: 'line',
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    fill: false,
+                                    tension: 0.3,
+                                    yAxisID: 'y1'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const index = context.dataIndex;
+                                            const count = requestCounts[index];
+                                            const avg = durations[index].toFixed(2);
+                                            const p95 = percentiles[index].toFixed(2);
+                                            return [
+                                                `Requests: ${count}`,
+                                                `Avg Duration: ${avg} ms`,
+                                                `95th Percentile: ${p95} ms`
+                                            ];
+                                        }
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Overall Performance'
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Timestamp'
+                                    }
+                                },
+                                y: {
+                                    type: 'linear',
+                                    position: 'left',
+                                    title: {
+                                        display: true,
+                                        text: 'Request Count'
+                                    },
+                                    beginAtZero: true
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    position: 'right',
+                                    title: {
+                                        display: true,
+                                        text: 'Duration (ms)'
+                                    },
+                                    beginAtZero: true,
+                                    grid: {
+                                        drawOnChartArea: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+
+
+            <!-- Flex container to hold both chart sections side by side -->
+            <div style="display: flex; justify-content: center; align-items: flex-start; gap: 40px; flex-wrap: wrap;">
+
+                <!-- Chart 2 Container -->
+                <div class="chart-container" style="flex: 1; max-width: 700px; flex-direction: column; display: flex;">
+                    <!-- Controls above chart -->
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <label for="avgTimeThreshold"><strong>Slowest API Calls (ms):</strong></label>
+                        <input type="number" id="avgTimeThreshold" value="1000" min="1" style="width: 80px;" />
+                        <button id="updateAvgTimeBtn">Update Chart</button>
+                    </div>
+                    <!-- Chart canvas -->
+                    <canvas id="myChart2" style="width: 100%; max-width: 700px; "></canvas>
+                </div>
+
+
+                <!-- Chart 3 Container -->
+                <div class="chart-container" style="flex: 1; max-width: 700px; flex-direction: column; display: flex;">
+                    <!-- Controls above chart -->
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <label for="queryBarThreshold"><strong>Slowest Internal Calls (ms):</strong></label>
+                        <input type="number" id="queryBarThreshold" value="50" min="1" style="width: 80px;" />
+                        <button id="updateQueryBarChartBtn">Update Chart</button>
+                    </div>
+                    <!-- Chart canvas -->
+                    <canvas id="queryBarChart" style="width: 100%; max-width: 700px; ;"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Display results dynamically using Go's template engine -->
+        {{ if .RequestPathStats }}
+        <div class="result">
+            <h2>Slowest Endpoints</h2>
+            <table id="requestPathTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Request Path</th>
+                        <th>Count</th>
+                        <th>Average Time (ms)</th>
+                        <th>95th Percentile (ms)</th>
+                        <th>Maximum Time (ms)</th>
+                        <th>Minimum Time (ms)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $path, $details := .RequestPathStats }}
+                    <tr>
+                        <td class="request-path" data-path="{{ $path }}">{{ $path }}</td>
+                        <td>{{ $details.Count }}</td>
+                        <td>{{ printf "%.2f" $details.AverageTime }}</td>%
+                        <td>{{ printf "%.2f" $details.Percentile}}</td>
+                        <td>{{ printf "%.2f" $details.MaxTime}}</td>
+                        <td>{{ printf "%.2f" $details.MinTime}}</td>   
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>            
+        </div>
+        {{ end }}
+
+        {{ if .QueryMetrics }}
+        <div class="result">
+            <h2>Slowest Internal Operations</h2>
+            <table id="queryMetricsTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Elapsed Time (ms)</th>
+                        <th>Count</th>
+                        <th>Maximum Time (ms)</th>
+                        <th>Elapsed Time Per Execution(ms)</th>
+                        <th>Minimum Time (ms)</th>
+                        <th>95th Percentile (ms)</th>
+                        <th>Request Query</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $query, $metrics := .QueryMetrics }}
+                    <tr>
+                        <td>{{ printf "%.2f" $metrics.TotalTime}}</td>
+                        <td class="all-queries">{{ $metrics.Count }}</td>
+                        <td>{{ printf "%.2f" $metrics.MaxTime }}</td>
+                        <td>{{ printf "%.2f" $metrics.AverageTime }}</td>
+                        <td>{{ printf "%.2f" $metrics.MinTime }}</td>
+                        <td>{{ printf "%2f" $metrics.Percentile}}</td>
+                        <td>{{ $query }}</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+
+            <h2>Slowest Requests Analysis</h2>
+            <table id="requestTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Correlation ID</th>
+                        <th>Request Path</th>
+                        <th>Duration</th>    
+                    </tr>
+                </thead>
+                <tbody>{{range .HttpResponses}}
+                    <tr>
+                        <td>{{ .CorrelationId }}</td>
+                        <td>{{ .RequestPath }}</td>
+                        <td>{{ .TotalDurationForRequest }}</td>                            
+                    </tr>
+                    {{end}}
+                </tbody>                                
+            </table>
+            <button class="floating-btn" type="button" onclick="getNewWindow()">+</button>
+        </div>
+        {{ end }}
+    </div>
+
+    <script>
+        // Initialize DataTables
+        $(document).ready(function () {
+        // Ensure DataTables is initialized only once
+        if (!$.fn.dataTable.isDataTable('#requestPathTable')) {
+            $('#requestPathTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                lengthChange: true,
+                pageLength: 10,
+                columnDefs: [
+                    { type: "num", targets: 3 } // Ensure Average Time column is treated as a number
+                ],
+                order: [[3, "desc"]] // Sort by Average Time (ms) in descending order
+            });
+        }
+
+        // Make entire row clickable
+        $('#requestPathTable tbody').on('click', 'tr', function () {
+            // Assuming data-path is set on <tr>, if not, extract from a cell
+            var path = $(this).data('path');
+            
+            // If not available via data attribute, extract from first column (adjust index if needed)
+            if (!path) {
+                path = $(this).find('td').eq(0).text().trim();
+            }
+
+            if (path) {
+                var tabUUID = window.name; // assuming tab UUID is stored in window.name
+                console.log('Navigating to:', path);
+                console.log('Tab UUID:', tabUUID);
+
+                window.location.href = '/request-details?path=' + encodeURIComponent(path) + '&tabUUID=' + encodeURIComponent(tabUUID);
+            } else {
+                console.error('Path not found for the clicked row');
+                alert('Error: Path not found');
+            }
+        });
+    });
+
+
+        // Initialize DataTables for the Query Stats table
+        $(document).ready(function () {
+            console.log("Initializing DataTable...");
+
+            $('#queryMetricsTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                lengthChange: true,
+                pageLength: 10,
+                order: [[5, "desc"]]
+            });
+
+            console.log("DataTable initialized successfully.");
+
+            // Attach click event to the entire row
+            $('#queryMetricsTable tbody').on('click', 'tr', function () {
+                console.log("Row clicked in queryMetricsTable.");
+
+                // Retrieve the query text from the last cell in the clicked row
+                var query = $(this).find('td:last').text().trim();
+                console.log("Extracted query:", query);
+
+                // Get tabUUID from window.name
+                var tabUUID = window.name;
+                console.log("Tab UUID:", tabUUID);
+
+                if (query && tabUUID) {
+                    console.log("Redirecting to queryExecutions page...");
+                    window.location.href = "/queryExecutions?query=" + encodeURIComponent(query) + "&tabUUID=" + encodeURIComponent(tabUUID);
+                } else {
+                    console.error("Missing query or tabUUID");
+                    alert("Error: Missing query or tabUUID");
+                }
+            });
+        });
+
+
+
+        $(document).ready(function (){
+            $('#requestTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                lengthChange: true,
+                pageLength: 10,
+                order: [[2, "desc"]],
+            })
+        })
+
+        // Function to generate a simple UUID
+        function generateUUID() {
+            return 'xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0,
+                    v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Function to ensure the tab has a UUID
+        function ensureTabUUID() {
+            // If window.name doesn't already have a UUID, assign one
+            if (!window.name) {
+                const uuid = generateUUID();
+                window.name = uuid;
+                console.log('Tab UUID set:', window.name);
+            } else {
+                console.log('Existing Tab UUID:', window.name);
+            }
+            // Set the UUID to the hidden input field
+            document.getElementById('uniqueID').value = window.name;
+        }
+
+        // Function to open a new tab and handle UUID for isolation
+        function getNewWindow() {
+            // Generate a UUID for the new tab
+            const uuid = generateUUID();
+
+            // Open a new tab with the same 'index.html' and set window.name to UUID for isolation
+            const newWindow = window.open(location.href, '_blank');            
+        }
+
+        // Ensure each tab has a unique ID
+        ensureTabUUID();
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let chartInstance = null;
+
+            // Function to generate distinct HSL colors
+            function generateColors(count, saturation = "70%", lightness = "50%") {
+                let colors = [];
+                for (let i = 0; i < count; i++) {
+                    let hue = (i * 137.5) % 360;
+                    colors.push(`hsl(${hue}, ${saturation}, ${lightness})`);
+                }
+                return colors;
+            }
+
+            // Function to build the bar chart
+            function updateAvgTimeChart(threshold) {
+                const xValues = [];
+                const avgValues = [];
+                const p95Values = [];
+
+                document.querySelectorAll("#requestPathTable tbody tr").forEach(row => {
+                    let requestPath = row.querySelector(".request-path").dataset.path;
+                    let avgTime = parseFloat(row.cells[2].innerText.trim());
+                    let p95Time = parseFloat(row.cells[3].innerText.trim());
+
+                    if (avgTime > threshold) {
+                        xValues.push(requestPath);
+                        avgValues.push(avgTime);
+                        p95Values.push(p95Time);
+                    }
+                });
+
+                const chartContainer = document.getElementById("chartsContainer");
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                if (xValues.length > 0) {
+                    chartContainer.style.display = "block";
+
+                    const avgColors = generateColors(xValues.length, "70%", "50%");
+                    const p95Colors = generateColors(xValues.length, "70%", "70%");
+
+                    const ctx = document.getElementById("myChart2").getContext("2d");
+
+                    chartInstance = new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: xValues,
+                            datasets: [
+                                {
+                                    label: "Avg Time (ms)",
+                                    backgroundColor: "rgba(75, 192, 192, 0.7)",
+                                    data: avgValues
+                                },
+                                {
+                                    label: "95th Percentile (ms)",
+                                    backgroundColor: "rgba(255, 99, 132, 0.7)",
+                                    data: p95Values
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            onClick: function (event, elements) {
+                                if (elements.length > 0) {
+                                    const index = elements[0].index;
+                                    const path = xValues[index];
+                                    window.location.href = '/request-details?path=' + encodeURIComponent(path) + '&tabUUID=' + encodeURIComponent(window.name);
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: "Response Time (ms)"
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            return `${tooltipItem.dataset.label}: ${tooltipItem.raw} ms`;
+                                        }
+                                    }
+                                },
+                                legend: {
+                                    display: true
+                                },
+                                title: {
+                                    display: true,
+                                    text: `Request Path vs Time (ms) (AvgTime > ${threshold}ms)`
+                                }
+                            }
+                        }
+
+                    });
+                } else {
+                    chartContainer.style.display = "none";
+                    console.log(`No request paths with average time greater than ${threshold}ms.`);
+                }
+            }
+
+            // Initial render with default threshold
+            const defaultThreshold = parseInt(document.getElementById("avgTimeThreshold").value) || 1000;
+            updateAvgTimeChart(defaultThreshold);
+
+            // Update chart on button click
+            document.getElementById("updateAvgTimeBtn").addEventListener("click", function () {
+                const threshold = parseInt(document.getElementById("avgTimeThreshold").value) || 1000;
+                updateAvgTimeChart(threshold);
+            });
+        });
+
+
+        // Script for Chart4 - Bar chart (Request Query vs Average Time)
+        document.addEventListener("DOMContentLoaded", function () {
+            let chartInstance = null;
+
+            // Function to generate distinct colors dynamically
+            function generateColors(count, baseHue = 0) {
+                let colors = [];
+                for (let i = 0; i < count; i++) {
+                    let hue = (baseHue + i * 137.5) % 360;
+                    colors.push(`hsl(${hue}, 70%, 50%)`);
+                }
+                return colors;
+            }
+
+            // Function to build the chart based on the threshold
+            function buildQueryBarChart(threshold) {
+                let xValues = [];
+                let avgTimeValues = [];
+                let percentile95Values = [];
+                let fullQueries = [];
+
+                document.querySelectorAll("#queryMetricsTable tbody tr").forEach(row => {
+                    let query = row.cells[6].innerText.trim();       // Request Query
+                    let avgTime = parseFloat(row.cells[3].innerText.trim());  // Average Time
+                    let percentile95 = parseFloat(row.cells[5].innerText.trim()); // 95th Percentile
+
+                    if (avgTime > threshold) {
+                        fullQueries.push(query);
+
+                        let truncatedQuery = query.length > 30 ? query.substring(0, 30) + "..." : query;
+                        xValues.push(truncatedQuery);
+                        avgTimeValues.push(avgTime);
+                        percentile95Values.push(percentile95);
+                    }
+                });
+
+                if (chartInstance) {
+                    chartInstance.destroy(); // Destroy previous chart instance if it exists
+                }
+
+                if (xValues.length > 0) {
+                    const ctx = document.getElementById("queryBarChart").getContext("2d");
+
+                    chartInstance = new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: xValues,
+                            datasets: [
+                                {
+                                    label: "Average Time",
+                                    backgroundColor: "rgba(75, 192, 192, 0.7)",
+                                    data: avgTimeValues
+                                },
+                                {
+                                    label: "95th Percentile",
+                                    backgroundColor: "rgba(255, 99, 132, 0.7)",
+                                    data: percentile95Values
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        maxRotation: 45,
+                                        minRotation: 45,
+                                        callback: function (value, index) {
+                                            return xValues[index];
+                                        }
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Time (ms)'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        title: function (tooltipItems) {
+                                            let index = tooltipItems[0].dataIndex;
+                                            return fullQueries[index];
+                                        },
+                                        label: function (tooltipItem) {
+                                            return `${tooltipItem.dataset.label}: ${tooltipItem.raw} ms`;
+                                        }
+                                    }
+                                },
+                                legend: {
+                                    display: true
+                                },
+                                title: {
+                                    display: true,
+                                    text: `Request Queries vs Time (ms) (AvgTime > ${threshold}ms)`
+                                }
+                            },
+                            onHover: function (e, activePoints) {
+                                if (activePoints.length > 0) {
+                                    let index = activePoints[0].index;
+                                    console.log('Hovered over query:', fullQueries[index]);
+                                }
+                            },
+                            onClick: function (e) {
+                                let activePoints = chartInstance.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                                if (activePoints.length > 0) {
+                                    let index = activePoints[0].index;
+                                    let selectedQuery = fullQueries[index];
+                                    console.log('Navigating to queryExecutions for query:', selectedQuery);
+
+                                    window.location.href = `/queryExecutions?query=${encodeURIComponent(selectedQuery)}&tabUUID=${encodeURIComponent(window.name)}`;
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.log(`No query metrics with an average time greater than ${threshold}ms.`);
+                }
+            }
+
+            // Initial chart render with default threshold
+            const defaultThreshold = parseInt(document.getElementById("queryBarThreshold").value);
+            buildQueryBarChart(defaultThreshold);
+
+            // Update chart when button is clicked
+            document.getElementById("updateQueryBarChartBtn").addEventListener("click", function () {
+                const newThreshold = parseInt(document.getElementById("queryBarThreshold").value);
+                buildQueryBarChart(newThreshold);
+            });
+        });
+
+    </script>    
+</body>
+</html>

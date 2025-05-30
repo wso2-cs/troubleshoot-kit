@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Executions</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- jQuery and DataTables Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            /* background-color: #f4f4f9; */
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font: bold 16pt Arial, Helvetica, Geneva, sans-serif;
+            color: #336699;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table.dataTable tbody td {
+            font: 8pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+
+        table.dataTable thead th {
+            font: bold 9pt Arial, Helvetica, Geneva, sans-serif;
+            color: black;
+        }
+
+        th {
+            
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .no-executions {
+            color: #ff0000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Query Executions for Query: {{.Query}} and Path: {{.Path}} </h1>
+
+    {{if .Executions}}
+        <table id="executionsTable" class="display">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Correlation ID</th>
+                    <th>Thread ID</th>
+                    <th>Duration</th>
+                    <th>Call Type</th>
+                    <th>Start Time</th>
+                    <th>Method Name</th>
+                    <th>Request Path</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Executions}}
+                    <tr>
+                        <td>{{.Timestamp}}</td>
+                        <td>{{.CorrelationId}}</td>
+                        <td>{{.ThreadId}}</td>
+                        <td>{{.TotalDurationForRequest}}</td>
+                        <td>{{.CallType}}</td>
+                        <td>{{.StartTime}}</td>
+                        <td>{{.MethodName}}</td>
+                        <td>{{.RequestPath}}</td>
+                    </tr>
+                {{end}}
+            </tbody>
+        </table>
+    {{else}}
+        <p class="no-executions">No executions found for the given query and path.</p>
+    {{end}}
+
+    <script>
+        $(document).ready(function() {
+            $('#executionsTable').DataTable({
+                "paging": true,          // Enable pagination
+                "searching": true,       // Enable search functionality
+                "ordering": true,        // Enable sorting
+                "info": true,            // Show information (like number of entries)
+                "lengthMenu": [5, 10, 15, 20], // Display options for pagination
+                "pageLength": 10         // Default number of rows per page
+            });
+        });
+    </script>
+</body>
+</html>

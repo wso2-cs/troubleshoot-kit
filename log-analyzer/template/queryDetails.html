@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queries for Correlation ID: {{.CorrelationId}}</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+</head>
+<body>
+
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+    }
+    h1 {
+        font: bold 16pt Arial, Helvetica, Geneva, sans-serif;
+        color: #336699;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    table.dataTable tbody td {
+        font: 10pt Arial, sans-serif;
+        color: black;
+    }
+    table.dataTable thead th {
+        font: bold 11pt Arial, sans-serif;
+        color: black;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #ddd;
+    }
+  </style>
+
+  <h1>Queries for Correlation ID: {{.CorrelationId}}</h1>
+
+  <table id="queryTable" class="display nowrap responsive">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Duration (ms)</th>
+        <th>Call Type</th>
+        <th>Request Path</th>
+        <th>Method Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Queries}}
+      <tr>
+        <td>{{.Timestamp}}</td>
+        <td>{{.TotalDurationForRequest}}</td>
+        <td>{{.CallType}}</td>
+        <td>{{.RequestPath}}</td>
+        <td>{{.MethodName}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+
+  <script>
+    $(document).ready(function() {
+      $('#queryTable').DataTable({
+        paging: true,        // Enables pagination
+        searching: true,     // Enables search bar
+        ordering: true,      // Enables column sorting
+        info: true,          // Shows table info (e.g., "Showing 1-10 of 50 entries")
+        lengthMenu: [5, 10, 25, 50], // Dropdown to select number of entries per page
+        pageLength: 10,      // Default number of rows per page
+        responsive: true,    // Makes table responsive for mobile
+      });
+    });
+  </script>
+
+</body>
+</html>
