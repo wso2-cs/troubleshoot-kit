@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# You'll need to provide port number with the url.
+# Example Web server: test.com:443
+# Example WSO2 EI Server: localhost:9443
+
+export URL=$1
+echo QUIT | openssl s_client -showcerts -connect $URL

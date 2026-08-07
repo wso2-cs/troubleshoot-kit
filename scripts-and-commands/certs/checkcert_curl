@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# You'll need to provide port number with the url.
+# Example Web server: test.com:443
+# Example WSO2 EI Server: localhost:9443
+
+curl --insecure -vvI https://$1 2>&1 | awk 'BEGIN { cert=0 } /^\* SSL connection/ { cert=1 } /^\*/ { if (cert) print }'

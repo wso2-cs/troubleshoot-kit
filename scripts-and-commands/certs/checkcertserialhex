@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# You'll need to provide port number with the url.
+# Example Web server: test.com:443
+# Example WSO2 EI Server: localhost:9443
+# Hex translation inspired by: https://unix.stackexchange.com/questions/533194/how-to-extract-serial-from-ssl-certificate
+
+export SITE_URL=$1
+echo QUIT | openssl s_client -connect ${SITE_URL} \
+  -servername ${SITE_URL} 2> /dev/null |  openssl x509 -noout  -serial|cut -d '=' -f2 | sed 's/../&:/g;s/:$//' 
