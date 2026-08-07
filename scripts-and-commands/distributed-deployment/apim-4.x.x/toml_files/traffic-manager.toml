@@ -14,13 +14,13 @@ create_admin_account = true
 
 [database.shared_db]
 type = "mysql"
-url = "jdbc:mysql://localhost:3306/SHARED_DB_WSO2AM_400?useSSL=false"
+url = "jdbc:mysql://localhost:3306/SHARED_DB_WSO2AM_4xx?useSSL=false"
 username = "MYSQL_ROOT_USERNAME"
 password = "MYSQL_ROOT_PASSWORD"
 
 [database.apim_db]
 type = "mysql"
-url = "jdbc:mysql://localhost:3306/APIM_DB_WSO2AM_400?useSSL=false"
+url = "jdbc:mysql://localhost:3306/APIM_DB_WSO2AM_4xx?useSSL=false"
 username = "MYSQL_ROOT_USERNAME"
 password = "MYSQL_ROOT_PASSWORD"
 
@@ -38,6 +38,7 @@ password = "wso2carbon"
 
 # key manager implementation
 [apim.key_manager]
+enable_apikey_subscription_validation = true
 service_url = "https://localhost:9445/services/"
 
 [apim.oauth_config]
